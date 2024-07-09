@@ -8,26 +8,35 @@
         <script src="https://unpkg.com/htmx.org@2.0.0" integrity="sha384-wS5l5IKJBvK6sPTKa2WZ1js3d947pvWXbPJ1OmWfEuxLgeHcEbjUUA5i9V5ZkpCw" crossorigin="anonymous"></script>
 
     </head>
-    <body>
-    {{ template "createContact" . }}
-    {{  template "displayContacts" . }}
+    <body style="width: 100%;">
+    {{ template "createContact" .Form }}
+    {{  template "displayContacts" .Data }}
     
     </body>
 </html>
 {{ end }}
 
 {{  block "createContact" . }}
-    <form hx-swap="outerHTML" hx-post="/contacts" hx-target="#displayContacts" style="display: flex; flex-direction: column">
+    <form hx-swap="outerHTML" hx-post="/contacts" hx-target="#displayContacts" style="display: flex; flex-direction: column; margin: 0 auto">
         <label for="name" >Name: </label>
-        <input type="text" name="name" />
-        
+        <input 
+        {{ if .Values.name }} value="{{ .Values.name }}"  {{ end }}
+        {{ if .Values.email }} value="{{ .Values.email }}"  {{ end }}
+        type="text"
+        name="name" />
+     
         <label for="email" >Email: </label>
-        <input type="text" name="email" />
+        <input
+        {{ if .Values.email }} value="{{ .Values.email }}"  {{ end }}
+         type="text" name="email" />
+         {{ if .Errors.email }} 
+         <div style="color: red">{{ .Errors.email }}</div>
+         {{ end }}
         <button type="submit">Submit</button>
     </form>
 {{ end}}
 
-{{ block "displayContacts" . }}
+{{ block "displayContacts" .Data }}
 <div id="displayContacts">
     {{range .Contacts}}
             <p>{{ .Name }}</p>
