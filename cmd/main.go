@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"io"
 
@@ -91,7 +92,7 @@ func main() {
 	e.Renderer = newTemplate()
 
 	e.GET("/", func(c echo.Context) error {
-		return c.Render(200, "index", page)
+		return c.Render(200, "index.html", page)
 	})
 
 	e.POST("/contacts", func(c echo.Context) error {
@@ -103,9 +104,12 @@ func main() {
 			formData.Values["name"] = name
 			formData.Values["email"] = email
 			formData.Errors["email"] = "Email already exists"
-			return c.Render(400, "createContact", formData)
+			fmt.Println(formData.Errors)
+			return c.Render(422, "createContact", formData)
 		}
-		page.Data.Contacts = append(page.Data.Contacts, newContact(name, email))
+
+		contact := newContact(name, email)
+		page.Data.Contacts = append(page.Data.Contacts, contact)
 
 		return c.Render(200, "displayContacts", page.Data)
 	})
